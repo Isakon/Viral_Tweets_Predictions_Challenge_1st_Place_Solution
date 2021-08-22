@@ -1,0 +1,109 @@
+# todo  RobustScaler , PowerTransformer
+experiment_name: catboost_Bootstrap_type_Bernoulli_save_then_load_TRUE  # _es4000_save_then_load_FALSE  # Bayesian Bernoulli MVS Poisson (supported for GPU only) boosting_Plain_max_depth10_es1k  # max_bin254
+des: Bootstrap_type_Bernoulli, iter4500,  max_depth-9
+model_arch_name: catboost # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
+
+load_train_test: False  # True False
+save_train_test: True  # True False
+save_then_load: True # to reproduce the 1st place solution score
+
+train_preprocessed_path: ../../data/processed/train_data_lgb_NoImpute_NoOhe_jun23_exp_catboost.csv
+test_preprocessed_path: ../../data/processed/test_data_lgb_NoImpute_NoOhe_jun23_exp_catboost.csv
+out_dir: ../../submissions/exp_cv690750_PL68.90189_catboost_Bootstrap_type_Bernoulli
+
+debug: False  # True  False
+n_samples_debug: 2000
+save_submission: True
+save_preds_model: True
+save_preds: True
+predict_test: True
+n_folds: 5  # 8  # 20
+folds_to_train: [0,1,2,3,4]
+
+folds_split_method: 'user_viral'  # 'viral_only'
+n_classes: 5
+
+seed_folds: 24
+seed_other: 24
+
+# features
+one_hot_encode: False  # True False
+impute_nulls: False  # True  False
+impute_value: -1  # median  # mean  # -1  # if necessary will impute selected columns (e.g. KBinsDiscretizer)
+# divide_impute_value: -1
+normalize_jointtraintest: True  # True # NORM FOR LGB WAS BETTER BY 0.1 (68.89 - 68.73)
+
+drop_media_img_feats: False  # True False
+drop_text_feats: False  # True False
+drop_user_des_feats: True # True  # False
+drop_user_img_feats: False  # True  #  False
+
+drop_tweet_user_id: True  # True
+
+n_drop_feat_imps_cols: 0 # 1200  # 0
+feat_imps_path: ../../data/processed/feature_importances_lgb_cv68879.csv
+
+mean_encoding: False # True False
+kbins_discretizer: False  # True
+kbins_n_bins: 1000
+kbins_strategy: quantile  #  {'uniform', 'quantile', 'kmeans'},
+
+quantile_transform: False
+n_quantiles: 1000
+add_user_virality: True  # True False
+
+adversarial_drop_thresh: None  # None  # 0.24 # change to None
+adversarial_valid_path:  None # '../../data/processed/adversarial_validation_cv512212_m_simple_dnn_ep20_nf5_t_11_06_time_22_24_e10/preds_val_adversarial_oof.csv'
+extracted_feats_path: None  # '../../submissions_jun24/z_archive/z_archive_all/cv987385_extract_feats_1_m_simple_dnn_ep40_bs256_nf5_t_17_06_time_14_18_e35_cv987385/extracted_features_simple_dnn.csv'
+
+dnn:
+  layers: [384]  #[512]  # [2048, 512]  # [6000, 3000]
+  loss_name: bce_weighted  # bce_weighted # bce_weighted bce
+  loss_class_weights: [0.35, 0.25, 0.2, 0.1, 0.1]
+  dropouts: [0.5]  # [0.3]
+dnn_extract_feats:
+  layers: [ 512 ]  #[512]  # [2048, 512]  # [6000, 3000]
+  layer_name_to_extract: dnn_hidden1 # dnn_modulelist.0.3  # dnn_modulelist
+  loss_name: bce  # bce  # bce_with_logits  # bce_weighted # bce_weighted bce
+  dropouts: [ 0.3 ]
+  # feats
+  target_cols_original: ['user_virality']  #  ['tweet_mention_count_binned', 'user_followers_count_binned']  # ['user_virality']
+  target_leaked_stems: ['user_id']  # ['tweet_mention_count', 'user_followers_count']  # the stem of the column names to drop (data leaked from target columns)
+  # ['user_id']
+n_epochs: 40  # 40  # 20
+init_lr: 0.001  # 0.001
+batch_size: 256  #2000  # 512
+weight_decay: 0.  # 0.00001
+early_stop: 40
+num_workers: 16  # 6-memory
+use_amp: False  # True
+
+catboost_params:
+  classes_count: 5
+  # grow_policy: Lossguide # SymmetricTree # Depthwise  # Lossguide
+  loss_function: MultiClass  # MultiClassOneVsAll
+  # boosting_type: Plain
+  iterations: 8000  # 4500 - fastest best
+  # learning_rate: 0.07501599937677383  # defined automatically in the original winning solution
+  # reg_lambda: 3.0  # default = 3.0
+  bootstrap_type: Bernoulli  # Bayesian Bernoulli MVS Poisson (supported for GPU only)
+  # subsample: # 0.66 - 0.8
+  max_depth: 9  # GPU-maybe<=8  # 10  #  9
+  # max_bin: 254  # 128-default  # 192-gpu-mem-w-symmetric_grow  # 254 # border_count: default 128 The value of this parameter significantly impacts the speed of training on GPU.
+  max_ctr_complexity: 1  # # no such param: max_ctr_complexity: 2 # for GPU memory
+  # bagging_temperature: 0.1
+  # min_child_samples:  # default=1
+  # num_leaves: 64 # default 31
+  # class_weights:
+  # boost_from_average: True  # available only for ....loss functions
+  eval_metric: Accuracy
+  verbose: 100
+  random_seed: 24
+  early_stopping_rounds: 2400  # 1000 - fastest best
+  task_type: GPU
+  # gpu_ram_part: 0.9
+  # thread_count: 2
+  # used_ram_limit: 14GB
+  # save_snapshot: True
+  # snapshot_file: catboost_interrupted_snapshot.cbsnapshot
+  # snapshot_interval: 600

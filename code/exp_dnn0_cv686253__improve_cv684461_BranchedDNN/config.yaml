@@ -1,0 +1,190 @@
+experiment_name: improve_cv684461_wd1e4_BranchedDNN_epochs80_layers2_jun29 # extract_feats_64feats_virality_NoUserDesCols_simple_dnn_layers
+des:
+model_arch_name: branched_dnn # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
+
+load_train_test: False  # True False
+save_train_test: True  # True False
+
+train_preprocessed_path: ../../data/processed/train_data_dnn_Impute_Ohe_jun29.csv
+test_preprocessed_path: ../../data/processed/test_data_dnn_Impute_Ohe_jun29.csv
+out_dir: ../../submissions/exp_cv686253_dnn0_seed0_improve_cv684461_BranchedDNN
+
+debug: False  # True  False
+n_samples_debug: 2000
+save_submission: True
+save_preds_model: True
+save_preds: True
+predict_test: True
+n_folds: 5  # 8  # 20
+folds_to_train: [0,1,2,3,4]
+folds_split_method: 'user_viral'  # 'viral_only'
+n_classes: 5
+
+seed_folds: 24
+seed_other: 24
+
+# features
+one_hot_encode: True  # True False
+impute_nulls: True  # True  False
+impute_value: -1  # median  # mean  # -1  # if necessary will impute selected columns (e.g. KBinsDiscretizer)
+drop_rare_ohe_language_ids: False  # if True: leave only lang ohe cols lang_leave_ids = [0, 1, 3]
+use_only_raw: False
+# divide_impute_value: -1
+normalize_jointtraintest: True  # True # NORM FOR LGB WAS BETTER BY 0.1 (68.89 - 68.73)
+
+drop_media_img_feats: False  # True False
+drop_text_feats: False  # True False
+drop_user_des_feats: False # True  # False
+drop_user_img_feats: False  # True  #  False
+
+drop_tweet_user_id: True  # True
+
+n_drop_feat_imps_cols: 0 #0  100  # 1200  # 300 # 1200
+feat_imps_path: ../../submissions_jun24/PL68.93564_cv688789_lgb_w_dnn_data_tweet2user_ratios_n_quarterly_user_m_simple_dnn_ep40_bs256_nf5_t_22_06_time_15_27_eNone_cv688789/feat_imps.csv
+
+mean_encoding: False # True False
+kbins_discretizer: False  # True
+kbins_n_bins: 1000
+kbins_strategy: quantile  #  {'uniform', 'quantile', 'kmeans'},
+
+quantile_transform: False
+n_quantiles: 1000
+add_user_virality: True  # True False
+
+adversarial_drop_thresh: None  # None  # 0.24 # change to None
+adversarial_valid_path:  None # '../../data/processed/adversarial_validation_cv512212_m_simple_dnn_ep20_nf5_t_11_06_time_22_24_e10/preds_val_adversarial_oof.csv'
+extracted_feats_path: None  # ../../data/processed/cv742141_extract_feats_64feats_virality_NoUserDesCols_simple_dnn_layers_m_simple_dnn_ep40_bs256_nf5_t_29_06_time_15_10_e23_cv742141/extracted_features_simple_dnn.csv
+
+dnn:
+  layers: [512, 480, 384]  #[512]  # [2048, 512]  # [6000, 3000]
+  loss_name: bce_weighted  #  bce_weighted  # bce
+  loss_class_weights: [0.35, 0.25, 0.2, 0.1, 0.1]
+  dropouts: [0.1, 0.1, 0.3]  # [0.1, 0.1]  # [0.3]
+dnn_extract_feats:
+  layers: [ 64 ]  #[512]  # [2048, 512]  # [6000, 3000]
+  layer_name_to_extract: dnn_hidden1 # dnn_modulelist.0.3  # dnn_modulelist
+  loss_name: bce  # bce  # bce_with_logits  # bce_weighted # bce_weighted bce
+  dropouts: [ 0.1 ]
+  # feats
+  target_cols_original: # ['tweet_mendion_count'] ['user_virality']  #  ['tweet_mention_count_binned', 'user_followers_count_binned']  # ['user_virality']
+  target_leaked_stems: # ['user_id']  # ['tweet_mention_count', 'user_followers_count']  # the stem of the column names to drop (data leaked from target columns)
+  n_bins_target: 5
+
+n_epochs: 80  # 40  # 40  # 20
+init_lr: 0.001  # 0.001
+batch_size: 256  #2000  # 512
+weight_decay: 0.00005  # 0.00001
+early_stop: 40
+num_workers: 16  # 6-memory
+use_amp: False  # True
+
+tabnet:
+  seed: 24
+  n_d: 64  # 96  # 32  # 64
+  n_a: 64  # 96  # 32  # 64
+  n_steps: 5
+  gamma: 1.5
+  n_independent: 2
+  n_shared: 2
+  # epsilon: 0.000000000000001  # 1e-15 Should be left untouched.
+  lambda_sparse: 0.0001  # default = 1e-3) The bigger this coefficient is, the sparser your model will be in terms of feature selection.
+  # momentum: 0.3  # typically ranges from 0.01 to 0.4 (default=0.02)
+  clip_value: 2
+#  loss_fn
+
+tabnet_fit:
+  max_epochs: 100 # -999  # will be equal to cfg.n_epochs
+  batch_size: 512  # 1024
+#  virtual_batch_size: 128
+  patience: 40
+  num_workers: 4
+
+lgb_model_params:
+#  task: train
+  boosting_type: gbdt  # gbdt, rf, dart, goss
+  # objective: regression
+  objective: multiclass  # , cross_entropy, multiclassova
+  num_classes: 5
+  # is_unbalance: True
+  metric: multi_error  #  multi_error, average_precision, rmse
+  learning_rate: 0.025  # 0.005 # 0.05 # 0.01  # default = 0.1
+  num_leaves: 191  # 95  # 63  127 # default = 31  # 96  # 63
+  # force_col_wise: True # set this to true to force col-wise histogram building: when the number of columns is large, or the total number of bins is large
+  # histogram_pool_size: 10000  # default = -1.0, max cache size in MB for historical histogram, < 0 means no limit
+  subsample: 0.9  #0.7  # 0.9
+  subsample_freq: 1
+  colsample_bytree: 0.6  # 0.8  #  0.6
+  max_bin: 127
+  max_depth: 9  #9  # default = -1  <= 0 means no limit
+  reg_alpha: 0.3  #001  #0.2  #0.11  # 0.16  # 0.20 # 0.16  # 11  #0.2  # 0.11
+  reg_lambda: 0.01  #0.06  #0.01  # 0.05  #  .01  # 0.05  # 01
+  min_child_samples: 20  #14  #20 # min_data_in_leaf:  default = 20
+  min_child_weight: 0.2
+  min_data_in_bin: 3
+  min_gain_to_split: 0.02
+
+
+#  bin_construct_sample_cnt: 6000 # 5000
+#  cat_l2: 10
+  # min_data_in_leaf  default = 20  minimal number of data in one leaf. Can be used to deal with over-fitting
+  # nthread: 4   # -1 - memory usage
+  # device: gpu
+  seed: 24
+  verbose: -1  # -1
+#  early_stopping_round: 500
+
+lgb_fit_params:
+  num_boost_round:      6000 # 5000 average of the best_iter  # 5000
+  early_stopping_rounds: 1000  #400  # 500  # 300  # 200  # 260  # 460  # 360  # if lower lr, set larger early_stopping  # 160  100
+  verbose_eval:         100  # 5000
+
+xgb_model_params:
+  use_rmm: True  # Whether to use RAPIDS Memory Manager (RMM)
+  objective: multi:softprob  #  'multi:softmax'
+  num_class: 5
+  max_depth: 5  # default = 6
+  max_bin: 256  # default = 256
+  # eval_metric: None  # logloss  # 'accuracy_score'  #  'multi_error'  # eval_metric 'rmse'
+  # disable_default_eval_metric: True
+  seed: 24
+  learning_rate: 0.01  # eta=  , default=0.3
+  subsample: 0.8
+  colsample_bytree: 0.85
+  reg_lambda: 1 # default 1
+  reg_alpha: 0  # default 0
+  tree_method: 'gpu_hist'
+  # device: 'gpu'
+  silent: 0  #  1
+xgb_fit_params:
+  num_boost_round:      5000
+  early_stopping_rounds: 400  # 160  100
+  verbose_eval:         200  # 5000
+
+catboost_params:
+  classes_count: 5
+  # grow_policy: Lossguide # SymmetricTree # Depthwise  # Lossguide
+  loss_function: MultiClass  # MultiClassOneVsAll
+  # boosting_type: Plain
+  iterations: 4500
+  # learning_rate: 0.03  # 0.025 (from model = 0.07xxx
+  # reg_lambda: 3.0  # default = 3.0
+  bootstrap_type: Bernoulli  # MVS # Bayesian Bernoulli MVS Poisson (supported for GPU only)
+  # subsample: # 0.66 - 0.8
+  max_depth: 9  # GPU-maybe<=8  # 10  #  9
+  # max_bin: 254  # 128-default  # 192-gpu-mem-w-symmetric_grow  # 254 # border_count: default 128 The value of this parameter significantly impacts the speed of training on GPU.
+  max_ctr_complexity: 1  # # no such param: max_ctr_complexity: 2 # for GPU memory
+  # bagging_temperature: 0.1
+  # min_child_samples:  # default=1
+  # num_leaves: 64 # default 31  from model: 'max_leaves': 512
+  # leaf_estimation_method: Newton
+  # class_weights:
+  # boost_from_average: True  # available only for ....loss functions
+  eval_metric: Accuracy
+  verbose: 100
+  random_seed: 24
+  early_stopping_rounds: 2000 # 800  #400
+  task_type: GPU
+  gpu_ram_part: 0.9
+  used_ram_limit: 14GB
+  # gpu_cat_features_storage: GpuRam
+  thread_count: 2
