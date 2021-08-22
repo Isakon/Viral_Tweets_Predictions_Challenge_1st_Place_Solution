@@ -1,4 +1,4 @@
-# Viral-Tweets-1st-Place-Solution
+# Viral-Tweets-Prediction-Challenge-1st-Place-Solution
 
 ## Environment
 OS: Linux Ubuntu 18.04
