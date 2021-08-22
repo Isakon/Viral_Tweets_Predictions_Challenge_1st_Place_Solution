@@ -139,7 +139,7 @@ cython_debug/
 
 # my additions
 # dirs
-
+.idea/
 nbs/
 data/raw/
 models/
@@ -158,6 +158,7 @@ z_archive/
 *.pkl
 *.ipynb
 *.tsv
+*.xml
 train*.csv
 test*.csv
 debug*.csv
