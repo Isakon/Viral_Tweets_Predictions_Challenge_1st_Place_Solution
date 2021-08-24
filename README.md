@@ -19,6 +19,20 @@ The link to the description page: https://bitgrit.net/competition/12#
 
 - Stacking is done with sklearn MLPClassifier, 2 layers, applied to 45 columns of probability predictions (5 classes * 9 base models)
 
+### Environment
+OS: Linux Ubuntu 18.04  
+Python 3.7.10  
+CUDA Version:  10.2  
+nvidia drivers:  460.80  
+Package manager: conda 4.10.1  
+To recreate environment run: 
+$conda env create -f environment.yml
+
+### Hardware
+RAM: 16 GB + swap space 16 GB  
+Disk space > 50GB  
+CPU: Intel i5 @ 2.90GHz - x86_64, 6 cores  
+GPU: RTX2070
 
 ### Directory structure
 ├── code
@@ -59,32 +73,32 @@ The link to the description page: https://bitgrit.net/competition/12#
 
 
 
-### Files created and used during execution
+ ### Files created and used during execution
 - 'data/processed/feature_importances_lgb_cv68879.csv' - feature importances of lightgbm model, created during execution of 'code/exp0_run_first_for_feature_importances_PL68.93564_cv688789_lgb/lgbm_train.py' and used to drop features in some base models
 - 'data/processed/train_ids_virality_fold.csv' - created during preprocessing of 'code/exp_cv688282__lgb_fidrop300/lgbm_train.py' base model script and used for stacking
 - 
  ### Data
  - Save the official dataset to location: 'data/raw' subdirectory
  
- ## Instructions to Run training and predictions
- - Create environment 'viral_tweets' with
-    $conda env create -f environment.yml
+ ### Instructions to Run training and predictions
+ - Create environment 'viral_tweets' with  
+    $conda env create -f environment.yml  
     $conda activate viral_tweets
 
- - Change to 'code' directory:
+ - Change to 'code' directory:  
         $cd code
- - To debug, run:
-        $bash train_group.sh -d True
-        # This will run training and prediction scripts on sample datasets (2000 samples)
- - To run training and prediction on full dataset, run:
+ - To debug, run:  
+        $bash train_group.sh -d True  
+        This will run training and prediction scripts on sample datasets (2000 samples)
+ - To run training and prediction on full dataset, run:  
         $bash train_group.sh -d False
- - To run any of the base models training and prediction, go to its subdirectory (e.g. 'code/exp_cv688349__lgb_param_tune_jun27') and run '$python main.py'
- - Before each run, the output subdirectories in the 'submissions' folder should be deleted or moved.
-
+   - To run any of the base models training and prediction, go to its subdirectory (e.g. 'code/exp_cv688349__lgb_param_tune_jun27') and run  
+        $python main.py
+ - Before each run, the output subdirectories in the 'submissions' folder should be deleted or moved.  
  - In debug mode total runtime is around 20 min., in full mode approximately 9-10 hours
 
 
-## Explanation of the Pipeline
+### Explanation of the Pipeline
 
 'train_group.sh' runs 4 lightgbm models (1 model is used only to output feature importances), 1 catboost, and 5 random seed versions of 1 neural network (pytorch). They each output 'preds_valid.csv' and 'preds_test_soft.csv' with 5 soft class prediction columns (probabilities) in respective subdirectories of 'submissions' folder.
 
@@ -119,23 +133,6 @@ The main.py from subdirectory 'code/exp_cv688282__lgb_fidrop300' saves train[['t
 
 ### Final submission.csv location
 - 'train_group.sh' will save 'submission.csv' in 'submissions/submission_stack_final' directory
-
-
-
-### Environment
-OS: Linux Ubuntu 18.04  
-Python 3.7.10  
-CUDA Version:  10.2  
-nvidia drivers:  460.80  
-Package manager: conda 4.10.1  
-To recreate environment run: 
-$conda env create -f environment.yml
-
-### Hardware
-RAM: 16 GB + swap space 16 GB  
-Disk space > 50GB  
-CPU: Intel i5 @ 2.90GHz - x86_64, 6 cores  
-GPU: RTX2070
 
 
 

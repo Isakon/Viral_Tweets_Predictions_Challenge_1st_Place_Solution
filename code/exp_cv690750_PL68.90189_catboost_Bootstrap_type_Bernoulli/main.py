@@ -12,17 +12,8 @@ from datasets import (Features, transform_joint, normalize_npnan,
                       NormalizeFeats, get_feat_cols, get_folds, split2folds_user_viral,
                         save_preprocessed
                       )
-# from utils import compare_data
-# import catboost
-# from catboost import *
-# from catboost.datasets import msrank
+
 from catboost import CatBoostClassifier, Pool
-
-import matplotlib.pyplot as plt
-# import seaborn as sns
-
-# import apex
-# from apex import amp
 
 import warnings
 warnings.filterwarnings('ignore')

@@ -16,12 +16,6 @@ from datasets import (Features, transform_joint, normalize_npnan,
 
 import lightgbm as lgb
 
-import matplotlib.pyplot as plt
-# import seaborn as sns
-
-# import apex
-# from apex import amp
-
 import warnings
 warnings.filterwarnings('ignore')
 pd.set_option("display.max_colwidth", 100)

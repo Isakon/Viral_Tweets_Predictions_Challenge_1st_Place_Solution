@@ -4,7 +4,7 @@ des: Bootstrap_type_Bernoulli, iter4500,  max_depth-9
 model_arch_name: catboost # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
 
 load_train_test: False  # True False
-save_train_test: True  # True False
+save_train_test: False  # True False
 save_then_load: True # to reproduce the 1st place solution score
 
 train_preprocessed_path: ../../data/processed/train_data_lgb_NoImpute_NoOhe_jun23_exp_catboost.csv

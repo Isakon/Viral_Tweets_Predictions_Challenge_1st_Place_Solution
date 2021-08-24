@@ -4,7 +4,7 @@ des: # gpu_ram_part-0.9, iter6000,  max_depth-9  , max_ctr_complexity-1, es 1k
 model_arch_name: lgb # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
 
 load_train_test: False  # True False
-save_train_test: True  # True False
+save_train_test: False  # True False
 
 train_preprocessed_path: ../../data/processed/train_data_lgb_NoImpute_NoOhe_jun23_exp2.csv
 test_preprocessed_path: ../../data/processed/test_data_lgb_NoImpute_NoOhe_jun23_exp2.csv

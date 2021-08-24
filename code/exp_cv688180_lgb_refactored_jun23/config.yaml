@@ -1,8 +1,8 @@
 # todo  RobustScaler , PowerTransformer
 experiment_name: lgb_refactored_jun23  # tabnet_nda32_cosineLR_lr2e2  # tabnet_nd64_na64_ep100_es30  # lgb_drop_only_all fi300_dnndata_add_ratios_quarter_user # mean_enc_user_id  # lgb_nbins_1000_discretizer_
-model_arch_name: tabnet # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
+model_arch_name: lgb # tabnet # simple_dnn  #  lgb  # randomforest  # mlp logistic_regression naive_bayes  # svm # randomforest
 
-load_train_test: True  # False  # True  # True False
+load_train_test: False  # False  # True  # True False
 save_train_test: False  # False  # True False
 
 train_preprocessed_path: ../../data/processed/a_train_data_lgb_NoImpute_NoOhe_jun23_exp1.csv
