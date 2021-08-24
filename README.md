@@ -1,55 +1,48 @@
-# Viral-Tweets-Prediction-Challenge-1st-Place-Solution
+## Viral-Tweets-Prediction-Challenge-1st-Place-Solution
 
-## Environment
-OS: Linux Ubuntu 18.04
+### Context
+The aim of the challenge is to predict the level of virality of a tweet using the tweet and the user data including image and text extracted features.  
+The metrics is the average accuracy for all 5 classes of virality.  
+The link to the description page: https://bitgrit.net/competition/12#  
 
-Python 3.7.10
+### Solution Overview
 
-CUDA Version:  10.2
+- Training data is split into 5 folds based on joint ['tweet_user_id','virality'] columns so that the users and virality are distributed evenly between folds.
 
-nvidia drivers:  460.80
+- Models used are 3 lightgbm models, 1 catboost and 5 different random seeds for 1 neural network architecture with pytorch.
 
-Package manager: conda 4.10.1
-To recreate environment use 
-$conda env create -f environment.yml
+- Neural network architecture consists of 2 branches of dense layers - one for tabular numerical and categorical features and the second for extracted text and image features which are concatenated at the second hidden layer and then outputs 5 class predictions. Loss function is the crossentropy with different class weights.
 
+- Hyperparameters of base models are in config.yaml files of respective subdirectories in 'code' directory
 
-## Minimum Hardware
-RAM: 32 GB
+- All base model scripts save 'preds_valid.csv' and 'preds_test_soft.csv' which are used in stacking. They each consist of 5 columns of probability predictions for each class.
 
-Disk space > 50GB
+- Stacking is done with sklearn MLPClassifier, 2 layers, applied to 45 columns of probability predictions (5 classes * 9 base models)
 
-CPU: Intel i5 @ 2.90GHz - x86_64, 6 cores
-
-GPU: RTX2070
-
-## Files
 
 ### Directory structure
 ├── code
 
-│   ├── exp0_run_first_for_feature_importances_PL68.93564_cv688789_lgb
+│   ├── exp0_run_first_for_feature_importances_PL68.93564_cv688789_lgb  
+│   ........├──────── config.yaml  
+│   ........└──────── ...  
+│   ........└──────── main.py  
+│  
+│   └── exp_cv690750_PL68.90189_catboost_Bootstrap_type_Bernoulli  
+│   ........├──────── config.yaml  
+│   ........└──────── ...  
+│   ........└──────── main.py  │  
 
-│   └── exp_cv688180_lgb_refactored_jun23
+│   └── exp_dnn0_cv686253__improve_cv684461_BranchedDNN  
+│   ........├──────── config.yaml  
+│   ........└──────── ...  
+│   ........└──────── main.py  
 
-│   └── exp_cv688282__lgb_fidrop300
-
-│   └── exp_cv688349__lgb_param_tune_jun27
-
-│   └── exp_cv690750_PL68.90189_catboost_Bootstrap_type_Bernoulli
-
-│   └── exp_dnn0_cv686253__improve_cv684461_BranchedDNN
-
-│   └── exp_dnn1_cv684394__seed1_cv6862_m_branched_dnn
-
-│   └── exp_dnn2_cv686389__seed2_cv6862_m_branched_dnn
-
-│   └── exp_dnn3_cv686625__seed3_cv6862_m_branched_dnn
-
-│   └── exp_dnn4_cv686355__seed4_cv6862_m_branched_dnn
-
-│   └── exp_stack_preds_cv70.075730
-
+│   └── exp_stack_preds_cv70.075730  
+│   ........├──────── config.yaml  
+│   ........└──────── ...  
+│   ........└──────── main.py  
+│  
 │   └── train_group.sh file
 
 ├── data
@@ -124,25 +117,25 @@ The main.py from subdirectory 'code/exp_cv688282__lgb_fidrop300' saves train[['t
    - The data is standardized by sklearn StandardScaler
    - The preprocessed train and test dataframes are saved and then loaded to reproduce the original results (the save files are deleted immediately to save disk space)
 
-###  What is the algorithm used and what are its main hyperparameters?
-- Training data is split into 5 folds with sklearn StratifiedKFold using joint ['tweet_user_id','virality'] columns so that the users and virality are distributed evenly between folds.
-
-- Models used are 3 lightgbm models, 1 catboost and 5 different random seeds for 1 neural network architecture by pytorch
-
-- Neural network architecture consists of 2 branches of dense layers - one for tabular numerical and categorical features and the second for extracted text and image features which are concatenated at the second hidden layer and then outputs 5 class softmax predictions
-
-- Hyperparameters of base models are in config.yaml files of respective subdirectories in 'code' directory
-
-- All base model scripts save 'preds_valid.csv' and 'preds_test_soft.csv' which are used in stacking. They consist of 5 columns of probability predictions for each class.
-
-- Stacking is done with sklearn MLPClassifier, 2 layers, applied to 45 columns of probability predictions (5 classes * 9 base models)
-
-
-## Final submission.csv location
+### Final submission.csv location
 - 'train_group.sh' will save 'submission.csv' in 'submissions/submission_stack_final' directory
 
 
 
+### Environment
+OS: Linux Ubuntu 18.04  
+Python 3.7.10  
+CUDA Version:  10.2  
+nvidia drivers:  460.80  
+Package manager: conda 4.10.1  
+To recreate environment run: 
+$conda env create -f environment.yml
+
+### Hardware
+RAM: 16 GB + swap space 16 GB  
+Disk space > 50GB  
+CPU: Intel i5 @ 2.90GHz - x86_64, 6 cores  
+GPU: RTX2070
 
 
 
